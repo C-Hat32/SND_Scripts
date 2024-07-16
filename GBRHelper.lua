@@ -16,6 +16,9 @@
 	<Changelog>
     1.0	: 	First version of the script. The following features work: Repair/Materia extraction/Food/AutoRetainer. 
 			Untested features (but expected to work): Aetherial Reduction
+			
+	1.1	:	Updated plugins dependancies and added a dependancy check
+			Fixed some features being called while changing areas
 	
 	<Additional Information>
 	Needed Plugins: 
