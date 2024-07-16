@@ -6,10 +6,13 @@
 	Version: 1.1
 	
 	Credits:
-	LeafFriend and plottingCreeper for the wrapper functions and the Repair/Materias/Food management, in the GatheringHelper script. They deserve the credit for most of the script functionalities.
+	LeafFriend for the navigation/materia extract/misc wrapper functions, in their GatheringHelper script
 	Link: https://github.com/Jaksuhn/SomethingNeedDoing/blob/master/Community%20Scripts/Gathering/GatheringHelper.lua
 	
-	Prawellp for the AutoRetainer function, in the Fate Farming script.
+	plottingCreeper for the Food/Repair management features
+	Link: https://github.com/plottingCreeper/FFXIV-scripts-and-macros
+	
+	Prawellp for the AutoRetainer function, in their Fate Farming script
 	Link: https://github.com/Prawellp/FFXIV-SND/blob/main/Fate%20Farming.lua
 	
 	
