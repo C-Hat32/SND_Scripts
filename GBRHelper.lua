@@ -18,7 +18,15 @@
 			Untested features (but expected to work): Aetherial Reduction
 	
 	<Additional Information>
-	Needed Plugins: GatherBuddyReborn, vnavmesh, Pandora, YesAlready
+	Needed Plugins: 
+		SomethingNeedDoing (Expanded Edition): https://puni.sh/api/repository/croizat
+			Enable lua on this script
+		GatherBuddyReborn
+		vnavmesh
+		Pandora
+		YesAlready:
+			Enable: -> Bothers -> MaterializeDialog
+			
 	Optional plugins: Auto Retainer
 	
 	Additional advice for GBR:
@@ -86,7 +94,7 @@ timeout_threshold = 10                                  --Maximum number of seco
 -- MAIN
 function main()
 		
-	stop_main = false	
+	stop_main = false
 	
 	Print("-----This script assumes you start with GBR OFF! If you have an issue make sure to turn GBR auto-gathering off before starting this script.-----") --Overall to do when GBR has on/o
 	Print("-----There's currently issues with GBR when the auto-gather list has different materials in the same area. If you encounter pathing issues, try to use an auto gather list with only one resource node-----")
@@ -243,7 +251,7 @@ function RepairExtractReduceCheck()
                 until IsPlayerAvailable()
         end
         while CanExtractMateria() and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold do
-yield("/wait 0.1")
+			yield("/wait 0.1")
             yield("/pcall Materialize true 2 0")
             repeat
                 yield("/wait 1")
