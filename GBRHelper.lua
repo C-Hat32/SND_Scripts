@@ -131,7 +131,7 @@ function main()
 		
 		repeat
 			yield("/wait "..interval_rate)
-		until not (GetCharacterCondition(6) or GetCharacterCondition(32)) and IsPlayerAvailable()
+		until not (GetCharacterCondition(6) or GetCharacterCondition(32) or GetCharacterCondition(45) or GetCharacterCondition(27)) and IsPlayerAvailable()
 		
 		yield("/wait "..interval_rate)
 	end
