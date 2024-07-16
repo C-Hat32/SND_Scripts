@@ -24,6 +24,7 @@
 		GatherBuddyReborn
 		vnavmesh
 		Pandora
+		Teleporter
 		YesAlready:
 			Enable: -> Bothers -> MaterializeDialog
 			
