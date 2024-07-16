@@ -1,15 +1,38 @@
 --[[
 
 	Name: GBR Helper
+	Author: C.Hat32
 	Description: Helper for GatherBuddyReborn to handle food, repairs, materias, collectables and retainers
+	Version: 1.0
 	
-	Most functions were made by LeafFriend and plottingCreeper for the GatheringHelper script. The deserve the credit for this script working.
+	Credits:
+	LeafFriend and plottingCreeper for the wrapper functions and the Repair/Materias/Food management, in the GatheringHelper script. They deserve the credit for most of the script functionalities.
 	Link: https://github.com/Jaksuhn/SomethingNeedDoing/blob/master/Community%20Scripts/Gathering/GatheringHelper.lua
 	
-	The Auto Retainer actions were made by Prawellp for the Fate Farming script.
+	Prawellp for the AutoRetainer function, in the Fate Farming script.
 	Link: https://github.com/Prawellp/FFXIV-SND/blob/main/Fate%20Farming.lua
 	
-	I only stitched them together and did some additional tweakings on them
+	
+	<Changelog>
+    1.0  : First version of the script. The following features work: Repair/Materialization/Food/AutoRetainer. Untested features (but expected to work
+	
+	<Additional Information>
+	Needed Plugins: GatherBuddyReborn, vnavmesh, Pandora, YesAlready
+	Optional plugins: Auto Retainer
+	
+	Additional advice for GBR:
+	- Set GBR > Config > Auto-Gather > General > Mount Up Distance to 30 
+	- Set GBR > Config > Auto-Gather > Advanced > Far Node Filter Distance to 100+ 
+	
+	
+	<Usage>
+    1. Change settings as wanted
+	2. Setup an auto-gather list in GBR (GatherBuddyReborn)
+	3. Make sure GBR auto-gather is off
+    4. Run script in lua
+	5. The script will run GBR auto-gather and do repairs/materia extraction/aetherial reduction/consume food, according to the settings
+		
+	
 	
 	=======-========+**#####*+======-------=-=
 	====----====*%@@%%%%%%%%%%@@%+==----------
@@ -34,24 +57,6 @@
 	-----==%@@@@+:==+==--==+**#*==*@@@#=--:---
 	=---==*@@@@@@*:::::-:::-:-=++#@@@@@=:-----
 	=====+%@@@@@@@%*::::.::::-=*%@@@@@@#------
-
-	
-	
-	Needed Plugins: GatherBuddyReborn, vnavmesh, Pandora, YesAlready
-	Optional plugins: Auto Retainer
-	
-	<Usage>
-    1. Change settings as wanted
-	2. Setup an auto-gather list in GBR (GatherBuddyReborn)
-	3. Make sure GBR auto-gather is off
-    4. Run script in lua
-	5. The script will run GBR auto-gather and do repairs/materia extraction/aetherial reduction/consume food, according to the settings
-	
-	
-	Additional advice for GBR:
-	- Set GBR > Config > Auto-Gather > General > Mount Up Distance to 30 
-	- Set GBR > Config > Auto-Gather > Advanced > Far Node Filter Distance to 100+ 
-
 ]]--
 
 ---Food Settings
