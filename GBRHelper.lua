@@ -20,15 +20,21 @@
 	<Additional Information>
 	Needed Plugins: 
 		SomethingNeedDoing (Expanded Edition): https://puni.sh/api/repository/croizat
-			Enable lua on this script
+			-> Enable lua on this script
 		GatherBuddyReborn
 		vnavmesh
-		Pandora
-		Teleporter
-		YesAlready:
-			Enable: -> Bothers -> MaterializeDialog
 			
-	Optional plugins: Auto Retainer
+	Optional plugins: 
+		For retainers feature:
+			Auto Retainer
+			Teleporter
+				Required to teleport to Limsa for AutoRetainer
+				
+		For repair/extract materias/aetherial reduction features:
+			YesAlready:
+				Enable: -> Bothers -> MaterializeDialog
+				
+				
 	
 	Additional advice for GBR:
 	- Set GBR > Config > Auto-Gather > General > Mount Up Distance to 30 
@@ -97,6 +103,10 @@ function main()
 		
 	stop_main = false
 	
+	if not HasAllDependencies() then
+		return
+	end
+
 	Print("-----This script assumes you start with GBR OFF! If you have an issue make sure to turn GBR auto-gathering off before starting this script.-----") --Overall to do when GBR has on/o
 	Print("-----There's currently issues with GBR when the auto-gather list has different materials in the same area. If you encounter pathing issues, try to use an auto gather list with only one resource node-----")
 	
@@ -135,6 +145,46 @@ function main()
 		
 		yield("/wait "..interval_rate)
 	end
+end
+
+--Check plugins dependencies
+function HasAllDependencies()
+
+	local allDependencies = true
+	
+	if not HasPlugin("vnavmesh") then
+		Print("Please Install vnavmesh")
+		allDependencies = false
+	end
+	if not HasPlugin("GatherbuddyReborn") then
+		Print("Please Install Gather Buddy Reborn")
+		allDependencies = false
+	end
+	
+	--Optional dependencies
+	if do_retainers == true then
+		if not HasPlugin("AutoRetainer") then
+			Print("Please Install AutoRetainer")
+			allDependencies = false
+		end
+		if not HasPlugin("TeleporterPlugin") then
+			Print("Please Install Teleporter")
+			allDependencies = false
+		end
+	end
+	if do_extract == true or do_repair == true or do_reduce == true then
+		if not HasPlugin("YesAlready") then
+			Print("Please Install YesAlready")
+			allDependencies = false
+		end 
+	end
+	
+	if(do_reduce == true) then
+		Print("Warning: You're using the untested Aetherial Reduction feature. Issues may occur.")
+	end
+	
+	return allDependencies
+	
 end
 
 --Check if actions needed
