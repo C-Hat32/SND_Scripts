@@ -2,7 +2,7 @@
 
 	Name: GBR Helper
 	Author: C.Hat32
-	Description: Helper for GatherBuddyReborn to handle food, repairs, materias, collectables and retainers
+	Description: Helper for GatherBuddyReborn to handle food, repairs, materia extraction, aetherial reduction and retainers
 	Version: 1.0
 	
 	Credits:
@@ -14,7 +14,8 @@
 	
 	
 	<Changelog>
-    1.0  : First version of the script. The following features work: Repair/Materialization/Food/AutoRetainer. Untested features (but expected to work
+    1.0	: 	First version of the script. The following features work: Repair/Materia extraction/Food/AutoRetainer. 
+			Untested features (but expected to work): Aetherial Reduction
 	
 	<Additional Information>
 	Needed Plugins: GatherBuddyReborn, vnavmesh, Pandora, YesAlready
