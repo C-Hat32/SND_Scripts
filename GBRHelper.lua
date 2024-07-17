@@ -25,6 +25,8 @@
 	
 	1.1		:	Added a random wait option. To enable, put do_random_pause = true
 	
+	1.2		:	Added potion usage, by LeChuckXIV
+	
 	<Additional Information>
 	Needed Plugins: 
 		SomethingNeedDoing (Expanded Edition): https://puni.sh/api/repository/croizat
@@ -91,7 +93,7 @@ food_to_eat = false --"Yakow Moussaka <hq>"             --Name of the food you w
 eat_food_threshold = 10                                 --Maximum number of seconds to check if food is consumed
 
 ---Pot Settings
-pot_to_drink = "Superior Spiritbond Potion <hq>" --"Superior Spiritbond Potion <hq>"             --Name of the potion you want to use, in quotes (ie. "[Name of potion]"), or
+pot_to_drink = false --"Superior Spiritbond Potion <hq>"--Name of the potion you want to use, in quotes (ie. "[Name of potion]"), or
                                                         --Table of names of the foods you want to use (ie. {"[Name of potion 1]", "[Name of potion 2]"}), or
                                                         --Set false otherwise.
                                                         --Include <hq> if high quality. (i.e. "[Name of potion] <hq>") DOES NOT CHECK ITEM COUNT YET
