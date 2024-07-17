@@ -29,7 +29,9 @@
 				Changed /gbr auto usage to use specific on/off commands
 				Added auto stop on Duty Pop
 				
-	1.2.1	:	Reset pause timer chen doig retainers
+	1.2.1	:	Reset pause timer when doing retainers
+	
+	1.3		:	Attempting to fix an issue when GBR wants to change area while waiting on script actions
 	
 	<Additional Information>
 	Needed Plugins: 
@@ -155,8 +157,15 @@ function main()
 		if not GetCharacterCondition(6) then DrinkPot() end
 				
 		if(HasActionsToDo()) then
+			
 			yield("/gbr auto off")
 			Print("Actions required, pausing gbr")
+			
+			yield("/wait 1")
+			while (GetCharacterCondition(27) or GetCharacterCondition(45)) and not IsPlayerAvailable() do -- while busy
+				yield("/wait "..interval_rate)
+			end			
+			
 			RepairExtractReduceCheck()
 			if (CheckQueue()) then return end
 			
@@ -316,11 +325,6 @@ function RepairExtractReduceCheck()
     local repair_token = IsNeedRepair()
     if repair_token then
         if repair_token == "self" then
-			
-			yield("/wait 1")
-			while GetCharacterCondition(27) do -- while casting (mount probably)
-				yield("/wait "..interval_rate)
-			end
 						
             StopMoveFly()
             if GetCharacterCondition(4) then
@@ -562,7 +566,7 @@ function CheckRetainers()
 			end
 			if (do_random_pause) then
 				last_pause = os.clock() -- set last pause as now as we're already doing something other than gathering
-				Print("Rest pause timer. Next pause in "..GetTimeString(next_pause_time))
+				Print("Reset pause timer. Next pause in "..GetTimeString(next_pause_time))
 			end
 		end
 	end
