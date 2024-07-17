@@ -97,7 +97,7 @@ food_to_eat = false --"Yakow Moussaka <hq>"             --Name of the food you w
 eat_food_threshold = 10                                 --Maximum number of seconds to check if food is consumed
 
 ---Pot Settings
-pot_to_drink = "Superior Spiritbond Potion <hq>"		--Name of the potion you want to use, in quotes (ie. "[Name of potion]"), or
+pot_to_drink = false --"Superior Spiritbond Potion <hq>"		--Name of the potion you want to use, in quotes (ie. "[Name of potion]"), or
                                                         --Table of names of the foods you want to use (ie. {"[Name of potion 1]", "[Name of potion 2]"}), or
                                                         --Set false otherwise.
                                                         --Include <hq> if high quality. (i.e. "[Name of potion] <hq>") DOES NOT CHECK ITEM COUNT YET
@@ -116,10 +116,10 @@ summonning_bell_name = "Summoning Bell"					--Change this to the summonning bell
 num_inventory_free_slot_threshold = 1                   --Max number of free slots to be left before stopping script
 interval_rate = 0.2                                     --Seconds to wait for each action
 
-do_random_pause = true									--Make random pauses at set intervals
-pause_duration = 30										--Pause duration in seconds
+do_random_pause = false									--Make random pauses at set intervals
+pause_duration = 40										--Pause duration in seconds
 pause_duration_rand = 10								--Random range for the pause duration, in seconds
-pause_delay = 300										--Time between two pauses, in seconds
+pause_delay = 900										--Time between two pauses, in seconds
 pause_delay_rand = 120									--Random range for the time between two pauses, in seconds
 
 timeout_threshold = 10                                  --Maximum number of seconds script will attempt to wait before timing out and continuing the script
