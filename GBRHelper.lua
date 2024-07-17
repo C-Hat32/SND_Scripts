@@ -26,6 +26,7 @@
 	1.1		:	Added a random wait option. To enable, put do_random_pause = true
 	
 	1.2		:	Added potion usage, by LeChuckXIV
+				Changed /gbr auto usage to use specific on/off commands
 	
 	<Additional Information>
 	Needed Plugins: 
@@ -139,10 +140,9 @@ function main()
 		return
 	end
 
-	Print("-----This script assumes you start with GBR OFF! If you have an issue make sure to turn GBR auto-gathering off before starting this script.-----") --Overall to do when GBR has on/o
 	Print("-----There's currently issues with GBR when the auto-gather list has different materials in the same area. If you encounter pathing issues, try to use an auto gather list with only one resource node-----")
 	
-	yield("/gbr auto") -- enabling gbr
+	yield("/gbr auto on") -- enabling gbr
 	Print("Enabling bgr auto-gathering")
 	
 	while not stop_main do -- Main Loop
@@ -151,12 +151,12 @@ function main()
 		if not GetCharacterCondition(6) then DrinkPot() end
 		
 		if(HasActionsToDo()) then
-			yield("/gbr auto") -- to improve
+			yield("/gbr auto off")
 			Print("Actions required, pausing gbr")
 			RepairExtractReduceCheck()
 			yield("/wait "..interval_rate)
 			CheckRetainers()
-			yield("/gbr auto") -- to improve
+			yield("/gbr auto on")
 			Print("Actions finished, enabling gbr")	
 		end		
 		
@@ -167,7 +167,7 @@ function main()
 				end
 				
 			stop_main = true
-			yield("/gbr auto") -- disabling gbr, to improve when we get on/off commands
+			yield("/gbr auto off") -- disabling gbr
 			return
 		end
 		
@@ -193,13 +193,13 @@ function CheckRandomPause()
 		local current_pause_duration = pause_duration + math.random(-pause_duration_rand, pause_duration_rand)
 		Print("Pausing gbr for "..GetTimeString(current_pause_duration))
 		
-		yield("/gbr auto") -- to improve
+		yield("/gbr auto off")
 		yield("/wait "..current_pause_duration)
 		
 		last_pause = os.clock()
 		next_pause_time = pause_delay + math.random(-pause_delay_rand, pause_delay_rand)
 		Print("Resuming gbr. Next pause in "..GetTimeString(next_pause_time))
-		yield("/gbr auto") -- to improve	
+		yield("/gbr auto on")	
 	end
 end
 
