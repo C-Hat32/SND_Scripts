@@ -17,7 +17,7 @@
 	
 	
 	<Changelog>
-    1.0		: 	First version of the script. The following features work: Repair/Materia extraction/Food/AutoRetainer. 
+	1.0		:	First version of the script. The following features work: Repair/Materia extraction/Food/AutoRetainer. 
 				Untested features (but expected to work): Aetherial Reduction
 			
 	1.0.1	:	Updated plugins dependancies and added a dependancy check
@@ -53,6 +53,7 @@
 	Additional advice for GBR:
 	- Set GBR > Config > Auto-Gather > General > Mount Up Distance to 30 
 	- Set GBR > Config > Auto-Gather > Advanced > Far Node Filter Distance to 100+ 
+	- There's currently issues with GBR when the auto-gather list has different materials in the same area. If you encounter pathing issues, try to use an auto gather list with only one resource node
 	
 	
 	<Usage>
@@ -134,16 +135,14 @@ next_pause_time = pause_delay + math.random(-pause_delay_rand, pause_delay_rand)
 
 -- MAIN
 function main()	
+		
+	if not HasAllDependencies() then
+		return
+	end	
 	
 	if (do_random_pause) then
 		Print("Next pause in "..GetTimeString(next_pause_time))
 	end
-	
-	if not HasAllDependencies() then
-		return
-	end
-
-	Print("-----There's currently issues with GBR when the auto-gather list has different materials in the same area. If you encounter pathing issues, try to use an auto gather list with only one resource node-----")
 	
 	yield("/gbr auto on") -- enabling gbr
 	WaitNextLoop()
@@ -252,7 +251,9 @@ function HasAllDependencies()
 		if not HasPlugin("YesAlready") then
 			Print("Please Install YesAlready")
 			allDependencies = false
-		end 
+		elseif do_extract == true then
+			Print("YesAlready detected. Please make sure Bothers -> MaterializeDialog option is enabled.")
+		end
 	end
 	
 	if(do_reduce == true) then
@@ -686,7 +687,7 @@ end
 
 --Prints given string into chat with script identifier
 function Print(message)
-	yield("/echo "..message)
+	yield("/echo [GBR HELPER] "..message)
 end
 
 main()
