@@ -17,11 +17,13 @@
 	
 	
 	<Changelog>
-    1.0	: 	First version of the script. The following features work: Repair/Materia extraction/Food/AutoRetainer. 
-			Untested features (but expected to work): Aetherial Reduction
+    1.0		: 	First version of the script. The following features work: Repair/Materia extraction/Food/AutoRetainer. 
+				Untested features (but expected to work): Aetherial Reduction
 			
-	1.1	:	Updated plugins dependancies and added a dependancy check
-			Fixed some features being called while changing areas
+	1.0.1	:	Updated plugins dependancies and added a dependancy check
+				Fixed some features being called while changing areas
+	
+	1.1		:	Added a random wait option. To enable, put do_random_pause = true
 	
 	<Additional Information>
 	Needed Plugins: 
@@ -101,13 +103,28 @@ summonning_bell_name = "Summoning Bell"					--Change this to the summonning bell
 num_inventory_free_slot_threshold = 1                   --Max number of free slots to be left before stopping script
 interval_rate = 0.2                                     --Seconds to wait for each action
 
+do_random_pause = false									--Make random pauses at set intervals
+pause_duration = 30										--Pause duration in seconds
+pause_duration_rand = 10								--Random range for the pause duration, in seconds
+pause_delay = 300										--Time between two pauses, in seconds
+pause_delay_rand = 120									--Random range for the time between two pauses, in seconds
+
 timeout_threshold = 10                                  --Maximum number of seconds script will attempt to wait before timing out and continuing the script
 
 
+-- INIT
+stop_main = false
+
+last_pause = os.clock()
+next_pause_time = pause_delay + math.random(-pause_delay_rand, pause_delay_rand)
+
+
 -- MAIN
-function main()
-		
-	stop_main = false
+function main()	
+	
+	if (do_random_pause) then
+		Print("Next pause in "..GetTimeString(next_pause_time))
+	end
 	
 	if not HasAllDependencies() then
 		return
@@ -131,8 +148,7 @@ function main()
 			CheckRetainers()
 			yield("/gbr auto") -- to improve
 			Print("Actions finished, enabling gbr")	
-		end
-		
+		end		
 		
 		if (not GetCharacterCondition(6) and not RepairExtractReduceCheck())
 			or GetInventoryFreeSlotCount() <= num_inventory_free_slot_threshold then
@@ -145,11 +161,35 @@ function main()
 			return
 		end
 		
+		if (do_random_pause) then
+			CheckRandomPause()
+		end
+		
 		repeat
 			yield("/wait "..interval_rate)
 		until not (GetCharacterCondition(6) or GetCharacterCondition(32) or GetCharacterCondition(45) or GetCharacterCondition(27)) and IsPlayerAvailable()
 		
 		yield("/wait "..interval_rate)
+	end
+end
+
+--Wrapper for the random pause
+function CheckRandomPause()
+
+	if not do_random_pause then return end
+	
+	if (os.clock() - last_pause > next_pause_time) then
+		
+		local current_pause_duration = pause_duration + math.random(-pause_duration_rand, pause_duration_rand)
+		Print("Pausing gbr for "..current_pause_duration.." seconds.")
+		
+		yield("/gbr auto") -- to improve
+		yield("/wait "..current_pause_duration)
+		
+		last_pause = os.clock()
+		next_pause_time = pause_delay + math.random(-pause_delay_rand, pause_delay_rand)
+		Print("Resuming gbr. Next pause in "..GetTimeString(next_pause_time))
+		yield("/gbr auto") -- to improve	
 	end
 end
 
@@ -557,6 +597,12 @@ function CheckNavmeshReady()
     if not was_ready then Print("Navmesh is ready!") end
 end
 
+--Converts time to minutes and seconds
+function GetTimeString(seconds)
+    local minutes = math.floor(seconds / 60)
+    local remainingSeconds = seconds % 60
+    return string.format("%dm %02ds", minutes, remainingSeconds)
+end
 
 --Prints given string into chat with script identifier
 function Print(message)
