@@ -27,6 +27,7 @@
 	
 	1.2		:	Added potion usage, by LeChuckXIV
 				Changed /gbr auto usage to use specific on/off commands
+				Added auto stop on Duty Pop
 	
 	<Additional Information>
 	Needed Plugins: 
@@ -146,16 +147,22 @@ function main()
 	WaitNextLoop()
 	
 	while not stop_main do -- Main Loop
-					
+		
+		if (CheckQueue()) then return end
+		
 		if not GetCharacterCondition(6) then EatFood() end
 		if not GetCharacterCondition(6) then DrinkPot() end
-		
+				
 		if(HasActionsToDo()) then
 			yield("/gbr auto off")
 			Print("Actions required, pausing gbr")
 			RepairExtractReduceCheck()
+			if (CheckQueue()) then return end
+			
 			yield("/wait "..interval_rate)
 			CheckRetainers()
+			if (CheckQueue()) then return end
+			
 			yield("/gbr auto on")
 			Print("Actions finished, enabling gbr")	
 		end		
@@ -177,7 +184,7 @@ function main()
 		
 		WaitNextLoop()
 		
-		yield("/wait "..interval_rate)
+		--yield("/wait "..interval_rate)
 	end
 end
 
@@ -196,9 +203,15 @@ function CheckRandomPause()
 	if (os.clock() - last_pause > next_pause_time) then
 		
 		local current_pause_duration = pause_duration + math.random(-pause_duration_rand, pause_duration_rand)
-		Print("Pausing gbr for "..GetTimeString(current_pause_duration))
-		
+		Print("Pausing gbr for "..GetTimeString(current_pause_duration))		
 		yield("/gbr auto off")
+		
+		local current_pause_start = os.clock()		
+		repeat
+			yield("/wait "..interval_rate)
+			if (CheckQueue()) then return end
+		until os.clock() - current_pause_start > current_pause_duration
+		
 		yield("/wait "..current_pause_duration)
 		
 		last_pause = os.clock()
@@ -394,7 +407,7 @@ function RepairExtractReduceCheck()
             Dismount()
         end
         Print("Attempting to perform aetherial reduction...")
-        repeat
+        repeat --Show reduction window
             yield('/gaction "Aetherial Reduction"')
             local timeout_start = os.clock()
             repeat
@@ -402,17 +415,22 @@ function RepairExtractReduceCheck()
             until IsNodeVisible("PurifyItemSelector", 1, 6) or IsNodeVisible("PurifyItemSelector", 1, 7) or os.clock() - timeout_start > timeout_threshold
         until IsAddonVisible("PurifyItemSelector") and IsAddonReady("PurifyItemSelector")
         yield("/wait "..interval_rate)
-        while not IsNodeVisible("PurifyItemSelector", 1, 7) and IsNodeVisible("PurifyItemSelector", 1, 6) and GetInventoryFreeSlotCount() > num_inventory_free_slot_threshold do
+        while not IsNodeVisible("PurifyItemSelector", 1, 7) and IsNodeVisible("PurifyItemSelector", 1, 6) and GetInventoryFreeSlotCount() > num_inventory_free_slot_threshold do -- reduce all
             yield("/pcall PurifyItemSelector true 12 0")
             repeat
                 yield("/wait "..interval_rate)
             until not GetCharacterCondition(39)
+			
+			if (stop_main) then 
+				yield('/gaction "Aetherial Reduction"')
+				return 
+			end
         end
-        while IsAddonVisible("PurifyItemSelector") do
+        while IsAddonVisible("PurifyItemSelector") do --Hide reduction window
             yield('/gaction "Aetherial Reduction"')
             repeat
                 yield("/wait "..interval_rate)
-            until IsPlayerAvailable()
+            until IsPlayerAvailable()		
         end
         Print("Aetherial reduction complete!")
     end
@@ -420,7 +438,18 @@ function RepairExtractReduceCheck()
     return true
 end
 
+function CheckQueue()
 
+	if GetCharacterCondition(59) then -- Queue popped
+		stop_main = true
+		Print("Queue pop, stopping script and gbr")
+		WaitNextLoop()
+		yield("/gbr auto off")
+		return true
+	end
+	
+	return false
+end
 
 --Wrapper for food checking, and if want to consume, consume if not fooded
 function EatFood()
