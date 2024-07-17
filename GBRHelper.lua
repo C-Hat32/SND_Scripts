@@ -181,7 +181,7 @@ function CheckRandomPause()
 	if (os.clock() - last_pause > next_pause_time) then
 		
 		local current_pause_duration = pause_duration + math.random(-pause_duration_rand, pause_duration_rand)
-		Print("Pausing gbr for "..current_pause_duration.." seconds.")
+		Print("Pausing gbr for "..GetTimeString(current_pause_duration))
 		
 		yield("/gbr auto") -- to improve
 		yield("/wait "..current_pause_duration)
