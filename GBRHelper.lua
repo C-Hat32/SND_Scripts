@@ -3,7 +3,7 @@
 	Name: GBR Helper
 	Author: C.Hat32
 	Description: Helper for GatherBuddyReborn to handle food, repairs, materia extraction, aetherial reduction and retainers
-	Version: 1.1
+	Version: 1.2
 	
 	Credits:
 	LeafFriend for the navigation/materia extract/misc wrapper functions, in their GatheringHelper script
@@ -90,6 +90,13 @@ food_to_eat = false --"Yakow Moussaka <hq>"             --Name of the food you w
                                                         --Include <hq> if high quality. (i.e. "[Name of food] <hq>") DOES NOT CHECK ITEM COUNT YET
 eat_food_threshold = 10                                 --Maximum number of seconds to check if food is consumed
 
+---Pot Settings
+pot_to_drink = "Superior Spiritbond Potion <hq>" --"Superior Spiritbond Potion <hq>"             --Name of the potion you want to use, in quotes (ie. "[Name of potion]"), or
+                                                        --Table of names of the foods you want to use (ie. {"[Name of potion 1]", "[Name of potion 2]"}), or
+                                                        --Set false otherwise.
+                                                        --Include <hq> if high quality. (i.e. "[Name of potion] <hq>") DOES NOT CHECK ITEM COUNT YET
+drink_pot_threshold = 10                                 --Maximum number of seconds to check if potion is consumed
+
 ---Repair/Materia Settings
 do_repair   = "self"                                    --false, "npc" or "self". Add a number to set threshhold; "npc 10" to only repair if under 10%
 repair_threshold = 50									--value at which to repair gear
@@ -139,6 +146,7 @@ function main()
 	while not stop_main do -- Main Loop
 					
 		if not GetCharacterCondition(6) then EatFood() end
+		if not GetCharacterCondition(6) then DrinkPot() end
 		
 		if(HasActionsToDo()) then
 			yield("/gbr auto") -- to improve
@@ -432,6 +440,36 @@ function EatFood()
 
             yield("/wait " .. math.max(interval_rate, 1))
         until HasStatus("Well Fed") or os.clock() - timeout_start > eat_food_threshold
+        SetSNDProperty("UseItemStructsVersion", tostring(user_settings[1]))
+        SetSNDProperty("StopMacroIfItemNotFound", tostring(user_settings[2]))
+        SetSNDProperty("StopMacroIfCantUseItem", tostring(user_settings[3]))
+    end
+end
+
+function DrinkPot()
+    if type(pot_to_drink) ~= "string" and type(pot_to_drink) ~= "table" then return end
+    if GetZoneID() == 1055 then return end
+    
+    if not HasStatus("Medicated") then
+        local timeout_start = os.clock()
+        local user_settings = {GetSNDProperty("UseItemStructsVersion"), GetSNDProperty("StopMacroIfItemNotFound"), GetSNDProperty("StopMacroIfCantUseItem")}
+        SetSNDProperty("UseItemStructsVersion", "true")
+        SetSNDProperty("StopMacroIfItemNotFound", "false")
+        SetSNDProperty("StopMacroIfCantUseItem", "false")
+        repeat
+            if type(pot_to_drink) == "string" then
+                Print("Attempt to consume " .. pot_to_drink)
+                yield("/item " .. pot_to_drink)
+            elseif type(pot_to_drink) == "table" then
+                for _, food in ipairs(pot_to_drink) do
+                    yield("/item " .. food)
+                    yield("/wait " .. math.max(interval_rate, 1))
+                    if HasStatus("Medicated") then break end
+                end
+            end
+
+            yield("/wait " .. math.max(interval_rate, 1))
+        until HasStatus("Medicated") or os.clock() - timeout_start > drink_pot_threshold
         SetSNDProperty("UseItemStructsVersion", tostring(user_settings[1]))
         SetSNDProperty("StopMacroIfItemNotFound", tostring(user_settings[2]))
         SetSNDProperty("StopMacroIfCantUseItem", tostring(user_settings[3]))
