@@ -3,7 +3,7 @@
 	Name: GBR Helper
 	Author: C.Hat32
 	Description: Helper for GatherBuddyReborn to handle food, repairs, materia extraction, aetherial reduction and retainers
-	Version: 1.2
+	Version: 1.2.1
 	
 	Credits:
 	LeafFriend for the navigation/materia extract/misc wrapper functions, in their GatheringHelper script
@@ -28,6 +28,8 @@
 	1.2		:	Added potion usage, by LeChuckXIV
 				Changed /gbr auto usage to use specific on/off commands
 				Added auto stop on Duty Pop
+				
+	1.2.1	:	Reset pause timer chen doig retainers
 	
 	<Additional Information>
 	Needed Plugins: 
@@ -95,7 +97,7 @@ food_to_eat = false --"Yakow Moussaka <hq>"             --Name of the food you w
 eat_food_threshold = 10                                 --Maximum number of seconds to check if food is consumed
 
 ---Pot Settings
-pot_to_drink = false --"Superior Spiritbond Potion <hq>"--Name of the potion you want to use, in quotes (ie. "[Name of potion]"), or
+pot_to_drink = "Superior Spiritbond Potion <hq>"		--Name of the potion you want to use, in quotes (ie. "[Name of potion]"), or
                                                         --Table of names of the foods you want to use (ie. {"[Name of potion 1]", "[Name of potion 2]"}), or
                                                         --Set false otherwise.
                                                         --Include <hq> if high quality. (i.e. "[Name of potion] <hq>") DOES NOT CHECK ITEM COUNT YET
@@ -114,7 +116,7 @@ summonning_bell_name = "Summoning Bell"					--Change this to the summonning bell
 num_inventory_free_slot_threshold = 1                   --Max number of free slots to be left before stopping script
 interval_rate = 0.2                                     --Seconds to wait for each action
 
-do_random_pause = false									--Make random pauses at set intervals
+do_random_pause = true									--Make random pauses at set intervals
 pause_duration = 30										--Pause duration in seconds
 pause_duration_rand = 10								--Random range for the pause duration, in seconds
 pause_delay = 300										--Time between two pauses, in seconds
@@ -497,8 +499,8 @@ function DrinkPot()
                 Print("Attempt to consume " .. pot_to_drink)
                 yield("/item " .. pot_to_drink)
             elseif type(pot_to_drink) == "table" then
-                for _, food in ipairs(pot_to_drink) do
-                    yield("/item " .. food)
+                for _, pot in ipairs(pot_to_drink) do
+                    yield("/item " .. pot)
                     yield("/wait " .. math.max(interval_rate, 1))
                     if HasStatus("Medicated") then break end
                 end
@@ -556,6 +558,10 @@ function CheckRetainers()
 			yield("/wait 1")
 			while GetCharacterCondition(45) do
 				yield("/wait 1")
+			end
+			if (do_random_pause) then
+				last_pause = os.clock() -- set last pause as now as we're already doing something other than gathering
+				Print("Rest pause timer. Next pause in "..GetTimeString(next_pause_time))
 			end
 		end
 	end
