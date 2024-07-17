@@ -143,7 +143,7 @@ function main()
 	Print("-----There's currently issues with GBR when the auto-gather list has different materials in the same area. If you encounter pathing issues, try to use an auto gather list with only one resource node-----")
 	
 	yield("/gbr auto on") -- enabling gbr
-	Print("Enabling bgr auto-gathering")
+	WaitNextLoop()
 	
 	while not stop_main do -- Main Loop
 					
@@ -175,12 +175,17 @@ function main()
 			CheckRandomPause()
 		end
 		
-		repeat
-			yield("/wait "..interval_rate)
-		until not (GetCharacterCondition(6) or GetCharacterCondition(32) or GetCharacterCondition(45) or GetCharacterCondition(27)) and IsPlayerAvailable()
+		WaitNextLoop()
 		
 		yield("/wait "..interval_rate)
 	end
+end
+
+function WaitNextLoop()
+
+	repeat
+		yield("/wait "..interval_rate)
+	until not (GetCharacterCondition(6) or GetCharacterCondition(32) or GetCharacterCondition(45) or GetCharacterCondition(27)) and IsPlayerAvailable()
 end
 
 --Wrapper for the random pause
