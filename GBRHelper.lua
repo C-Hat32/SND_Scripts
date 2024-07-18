@@ -598,7 +598,9 @@ function CheckRetainers()
 			yield("/wait 1")
 			Print("Finished processing retainers")
 			yield("/wait 1")
-			yield("/pcall RetainerList true -1")
+			if (IsAddonVisible("RetainerList")) then
+				yield("/pcall RetainerList true -1")
+			end
 			yield("/wait 1")
 			while GetCharacterCondition(45) do
 				yield("/wait 1")
