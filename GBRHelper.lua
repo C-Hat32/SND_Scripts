@@ -591,7 +591,10 @@ function CheckRetainers()
 			while ARRetainersWaitingToBeProcessed() == true do
 				yield("/wait 1")
 			end
-			yield("/waitaddon RetainerList")
+			
+			if (IsAddonVisible("RetainerList")) then
+				yield("/waitaddon RetainerList")
+			end
 			while not IsAddonVisible("RetainerList") do
 				yield("/wait 1")
 			end
