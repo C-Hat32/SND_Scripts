@@ -98,7 +98,7 @@
 ]]--
 
 ---Food Settings
-food_to_eat = false --"Yakow Moussaka <hq>"             --Name of the food you want to use, in quotes (ie. "[Name of food]"), or
+food_to_eat = false 						            --Name of the food you want to use, in quotes (ie. "[Name of food]"), or
                                                         --Table of names of the foods you want to use (ie. {"[Name of food 1]", "[Name of food 2]"}), or
                                                         --Set false otherwise.
                                                         --Include <hq> if high quality. (i.e. "[Name of food] <hq>") DOES NOT CHECK ITEM COUNT YET
@@ -281,8 +281,14 @@ function HasAllDependencies()
 			Print("Please Install YesAlready")
 			allDependencies = false
 		elseif do_extract == true then
-			Print("YesAlready detected. Please make sure Bothers -> MaterializeDialog option is enabled.")
+			Print("Materia extraction detected. Please make sure YesAlready setting -> Bothers -> MaterializeDialog option is enabled.")
 		end
+	end
+	
+	if (food_to_eat == true or pot_to_drink == true) then
+		Print("STOPPING SCRIPT!")
+		Print("Please specify a food/drink name instead of 'true'")
+		allDependencies = false
 	end
 	
 	if(do_reduce == true) then
