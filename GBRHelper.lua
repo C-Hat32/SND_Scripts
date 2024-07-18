@@ -3,7 +3,7 @@
 	Name: GBR Helper
 	Author: C.Hat32
 	Description: Helper for GatherBuddyReborn to handle food, repairs, materia extraction, aetherial reduction and retainers
-	Version: 1.2.1
+	Version: 1.3
 	
 	Credits:
 	LeafFriend for the navigation/materia extract/misc wrapper functions, in their GatheringHelper script
@@ -32,6 +32,7 @@
 	1.2.1	:	Reset pause timer when doing retainers
 	
 	1.3		:	Attempting to fix an issue when GBR wants to change area while waiting on script actions
+				Implemented an unstuck feature to try and dislodge/dismount the character when it's stuck on a path
 	
 	<Additional Information>
 	Needed Plugins: 
@@ -124,8 +125,14 @@ pause_duration = 40										--Pause duration in seconds
 pause_duration_rand = 10								--Random range for the pause duration, in seconds
 pause_delay = 900										--Time between two pauses, in seconds
 pause_delay_rand = 120									--Random range for the time between two pauses, in seconds
-
 timeout_threshold = 10                                  --Maximum number of seconds script will attempt to wait before timing out and continuing the script
+
+---Stuck Prevention Settings
+do_try_unstuck = true
+stuck_time = 3											--Time not moving before considering player is stuck
+time_to_wait_after_dislodge = 1							--Wait time between the unstuck movement and the next actions
+stuck_distance_allowed = 0.05							--Error margin for considering character is not moving
+position_rounding_precision = 2							--Numbers of decimals to keep when checking the player position
 
 
 -- INIT
@@ -133,6 +140,8 @@ stop_main = false
 
 last_pause = os.clock()
 next_pause_time = pause_delay + math.random(-pause_delay_rand, pause_delay_rand)
+last_player_position = {x = 0, y = 0, z = 0}
+last_checkstuck_time = os.clock()
 
 
 -- MAIN
@@ -145,6 +154,7 @@ function main()
 	if (do_random_pause) then
 		Print("Next pause in "..GetTimeString(next_pause_time))
 	end
+	last_player_position = GetPlayerPosition()
 	
 	yield("/gbr auto on") -- enabling gbr
 	WaitNextLoop()
@@ -175,6 +185,7 @@ function main()
 			
 			yield("/gbr auto on")
 			Print("Actions finished, enabling gbr")	
+			ResetStuck()
 		end		
 		
 		if (not GetCharacterCondition(6) and not RepairExtractReduceCheck())
@@ -188,21 +199,24 @@ function main()
 			return
 		end
 		
+		CheckStuck()
+		
 		if (do_random_pause) then
 			CheckRandomPause()
 		end
 		
 		WaitNextLoop()
 		
-		--yield("/wait "..interval_rate)
+		yield("/wait "..interval_rate)
 	end
 end
 
 function WaitNextLoop()
 
-	repeat
+	while (GetCharacterCondition(6) or GetCharacterCondition(32) or GetCharacterCondition(45) or GetCharacterCondition(27) or not IsPlayerAvailable()) do
 		yield("/wait "..interval_rate)
-	until not (GetCharacterCondition(6) or GetCharacterCondition(32) or GetCharacterCondition(45) or GetCharacterCondition(27)) and IsPlayerAvailable()
+		ResetStuck()
+	end
 end
 
 --Wrapper for the random pause
@@ -227,6 +241,7 @@ function CheckRandomPause()
 		last_pause = os.clock()
 		next_pause_time = pause_delay + math.random(-pause_delay_rand, pause_delay_rand)
 		Print("Resuming gbr. Next pause in "..GetTimeString(next_pause_time))
+		ResetStuck()
 		yield("/gbr auto on")	
 	end
 end
@@ -580,6 +595,81 @@ function StopMoveFly()
     end
 end
 
+function UnstuckFly()
+	
+	Print("Dismounting.")
+	yield("/gbr auto off")
+	Dismount()
+	yield("/gbr auto on")
+end
+
+--Wrapper handling when player stopped moving
+function UnstuckGeneric(target)
+    Print("Attempting to dislodge...")
+
+    --Implement random coord base on current player position
+    PathMoveTo(tonumber(GetPlayerRawXPos()+math.random(-5, 5)),
+        tonumber(GetPlayerRawYPos()+math.random(-5, 5)),
+        tonumber(GetPlayerRawZPos()+math.random(-5, 5)))
+    yield("/wait "..(time_to_wait_after_dislodge + math.random(0, 3 * 1000) / 1000))
+    Print("Waiting for "..Truncate1Dp(time_to_wait_after_dislodge + math.random(0, 3 * 1000) / 1000).."s before moving on...")
+end
+
+function ComparePositionsByMagnitude(pos1, pos2)
+    local distance = CalculateDistance(pos1, pos2)
+    return distance <= stuck_distance_allowed
+end
+
+function CalculateDistance(pos1, pos2)
+    local dx = pos1.x - pos2.x
+    local dy = pos1.y - pos2.y
+    local dz = pos1.z - pos2.z
+    return math.sqrt(dx * dx + dy * dy + dz * dz)
+end
+
+function GetPlayerPosition()
+
+	local xPos = Round(tonumber(GetPlayerRawXPos()) or 0, position_rounding_precision)
+	local yPos = Round(tonumber(GetPlayerRawYPos()) or 0, position_rounding_precision)
+	local zPos = Round(tonumber(GetPlayerRawZPos()) or 0, position_rounding_precision)
+	return {x = xPos, y = yPos, z = zPos}
+end
+
+--Check if player is stuck
+function CheckStuck()
+
+	if (GetCharacterCondition(6) or not NavIsReady()) then
+		ResetStuck()
+		return 
+	end
+	
+	if os.clock() - last_checkstuck_time < stuck_time then return end
+	
+	last_checkstuck_time = os.clock()
+	
+	new_player_position = GetPlayerPosition()
+	if (ComparePositionsByMagnitude(new_player_position, last_player_position)) then -- Player is stuck
+		Print("Player stuck detected.")
+		--Unstuck the player in the right way
+		
+		if PathIsRunning() then
+			UnstuckGeneric()
+		elseif GetCharacterCondition(4) then
+			UnstuckFly()
+		else
+			UnstuckGeneric()
+		end
+	end	
+	
+	last_player_position = new_player_position
+	
+end
+
+function ResetStuck()
+	last_player_position = GetPlayerPosition()
+	last_checkstuck_time = os.clock()
+end
+
 --Wrapper to dismount
 function Dismount()
     if GetCharacterCondition(77) then
@@ -687,6 +777,12 @@ function GetTimeString(seconds)
     local minutes = math.floor(seconds / 60)
     local remainingSeconds = seconds % 60
     return string.format("%dm %02ds", minutes, remainingSeconds)
+end
+
+--Rounds a number with decimals precision
+function Round(num, numDecimalPlaces)
+    local mult = 10^(numDecimalPlaces or 0)
+    return math.floor(num * mult + 0.5) / mult
 end
 
 --Prints given string into chat with script identifier
