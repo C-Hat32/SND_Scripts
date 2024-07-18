@@ -129,8 +129,8 @@ timeout_threshold = 10                                  --Maximum number of seco
 
 ---Stuck Prevention Settings
 do_try_unstuck = true
-stuck_time = 3											--Time not moving before considering player is stuck
-time_to_wait_after_dislodge = 1							--Wait time between the unstuck movement and the next actions
+stuck_time = 2											--Time not moving before considering player is stuck
+time_to_wait_after_dislodge = 8							--Wait time between the unstuck movement and the next actions
 stuck_distance_allowed = 0.05							--Error margin for considering character is not moving
 position_rounding_precision = 2							--Numbers of decimals to keep when checking the player position
 
@@ -213,7 +213,7 @@ end
 
 function WaitNextLoop()
 
-	while (GetCharacterCondition(6) or GetCharacterCondition(32) or GetCharacterCondition(45) or GetCharacterCondition(27) or not IsPlayerAvailable()) do
+	while (GetCharacterCondition(6) or GetCharacterCondition(32) or GetCharacterCondition(45) or GetCharacterCondition(27) or not IsPlayerAvailable() or PathfindInProgress()) do
 		yield("/wait "..interval_rate)
 		ResetStuck()
 	end
@@ -612,18 +612,25 @@ function UnstuckFly()
 	
 	Print("Dismounting.")
 	yield("/gbr auto off")
+	yield("/wait "..interval_rate)
 	Dismount()
 	yield("/gbr auto on")
+	yield("/wait "..(time_to_wait_after_dislodge + math.random(0, 3 * 1000) / 1000))
+    Print("Waiting for "..Truncate1Dp(time_to_wait_after_dislodge + math.random(0, 3 * 1000) / 1000).."s before moving on...")
 end
 
 --Wrapper handling when player stopped moving
 function UnstuckGeneric(target)
     Print("Attempting to dislodge...")
+	yield("/gbr auto off")
 
     --Implement random coord base on current player position
     PathMoveTo(tonumber(GetPlayerRawXPos()+math.random(-5, 5)),
         tonumber(GetPlayerRawYPos()+math.random(-5, 5)),
         tonumber(GetPlayerRawZPos()+math.random(-5, 5)))
+	
+	yield("/wait "..interval_rate * 3)
+	yield("/gbr auto on")
     yield("/wait "..(time_to_wait_after_dislodge + math.random(0, 3 * 1000) / 1000))
     Print("Waiting for "..Truncate1Dp(time_to_wait_after_dislodge + math.random(0, 3 * 1000) / 1000).."s before moving on...")
 end
@@ -651,7 +658,7 @@ end
 --Check if player is stuck
 function CheckStuck()
 
-	if (GetCharacterCondition(6) or not NavIsReady()) then
+	if (GetCharacterCondition(6) or GetCharacterCondition(32) or GetCharacterCondition(45) or GetCharacterCondition(27) or not IsPlayerAvailable() or not NavIsReady() or PathfindInProgress()) then
 		ResetStuck()
 		return 
 	end
@@ -675,6 +682,7 @@ function CheckStuck()
 	end	
 	
 	last_player_position = new_player_position
+	WaitNextLoop()
 	
 end
 
