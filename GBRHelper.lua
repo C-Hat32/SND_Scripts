@@ -3,7 +3,7 @@
 	Name: GBR Helper
 	Author: C.Hat32
 	Description: Helper for GatherBuddyReborn to handle food, repairs, materia extraction, aetherial reduction and retainers
-	Version: 1.3
+	Version: 1.3.1
 	
 	Credits:
 	LeafFriend for the navigation/materia extract/misc wrapper functions, in their GatheringHelper script
@@ -33,6 +33,10 @@
 	
 	1.3		:	Attempting to fix an issue when GBR wants to change area while waiting on script actions
 				Implemented an unstuck feature to try and dislodge/dismount the character when it's stuck on a path
+				
+	1.3.1	:	Improved the unstuck logic
+				Various unstuck bugfixes
+				Impremented another check to prevent an issue with materias/repair while mounted
 	
 	<Additional Information>
 	Needed Plugins: 
@@ -101,11 +105,12 @@ food_to_eat = false --"Yakow Moussaka <hq>"             --Name of the food you w
 eat_food_threshold = 10                                 --Maximum number of seconds to check if food is consumed
 
 ---Pot Settings
-pot_to_drink = false --"Superior Spiritbond Potion <hq>"		--Name of the potion you want to use, in quotes (ie. "[Name of potion]"), or
+pot_to_drink = false 									--Name of the potion you want to use, in quotes (ie. "[Name of potion]"), or
                                                         --Table of names of the foods you want to use (ie. {"[Name of potion 1]", "[Name of potion 2]"}), or
                                                         --Set false otherwise.
                                                         --Include <hq> if high quality. (i.e. "[Name of potion] <hq>") DOES NOT CHECK ITEM COUNT YET
-drink_pot_threshold = 10                                 --Maximum number of seconds to check if potion is consumed
+														
+drink_pot_threshold = 10                                --Maximum number of seconds to check if potion is consumed
 
 ---Repair/Materia Settings
 do_repair   = "self"                                    --false, "npc" or "self". Add a number to set threshhold; "npc 10" to only repair if under 10%
