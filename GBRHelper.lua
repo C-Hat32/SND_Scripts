@@ -643,7 +643,7 @@ function CheckStuck()
 		return 
 	end
 	
-	if os.clock() - last_checkstuck_time < stuck_time then return end
+	if os.clock() - last_checkstuck_time < math.max(stuck_time, 1.5) then return end
 	
 	last_checkstuck_time = os.clock()
 	
