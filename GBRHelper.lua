@@ -336,7 +336,8 @@ function HasReducibles()
 end
 
 function RepairExtractReduceCheck() 
-
+	
+	WaitNextLoop()
     local repair_token = IsNeedRepair()
     if repair_token then
         if repair_token == "self" then
