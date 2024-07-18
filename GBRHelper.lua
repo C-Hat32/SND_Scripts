@@ -171,10 +171,10 @@ function main()
 			yield("/gbr auto off")
 			Print("Actions required, pausing gbr")
 			
-			yield("/wait 1")
 			while (GetCharacterCondition(27) or GetCharacterCondition(45)) and not IsPlayerAvailable() do -- while busy
 				yield("/wait "..interval_rate)
-			end			
+			end
+			yield("/wait 1.5")
 			
 			RepairExtractReduceCheck()
 			if (CheckQueue()) then return end
@@ -336,8 +336,12 @@ function HasReducibles()
 end
 
 function RepairExtractReduceCheck() 
-	
-	WaitNextLoop()
+
+	if GetCharacterCondition(4) then
+		Print("Attempting to dismount...")
+		Dismount()
+	end
+		
     local repair_token = IsNeedRepair()
     if repair_token then
         if repair_token == "self" then
@@ -349,6 +353,11 @@ function RepairExtractReduceCheck()
             end
             Print("Attempting to self repair...")
             while not IsAddonVisible("Repair") and not IsAddonReady("Repair") do
+				if GetCharacterCondition(4) then
+					Print("Attempting to dismount...")
+					Dismount()
+				end
+				
                 yield('/gaction "Repair"')
                 repeat
                     yield("/wait "..interval_rate)
@@ -399,6 +408,11 @@ function RepairExtractReduceCheck()
                 until IsPlayerAvailable()
         end
         while CanExtractMateria() and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold do
+            if GetCharacterCondition(4) then
+                Print("Attempting to dismount...")
+                Dismount()
+            end
+			
 			yield("/wait 0.1")
             yield("/pcall Materialize true 2 0")
             repeat
