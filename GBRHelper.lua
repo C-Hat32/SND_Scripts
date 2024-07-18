@@ -336,11 +336,6 @@ function HasReducibles()
 end
 
 function RepairExtractReduceCheck() 
-
-	if GetCharacterCondition(4) then
-		Print("Attempting to dismount...")
-		Dismount()
-	end
 		
     local repair_token = IsNeedRepair()
     if repair_token then
@@ -435,7 +430,6 @@ function RepairExtractReduceCheck()
         end
     end
 
-    
 
     if do_reduce and HasReducibles() and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold then
         StopMoveFly()
@@ -453,6 +447,10 @@ function RepairExtractReduceCheck()
         until IsAddonVisible("PurifyItemSelector") and IsAddonReady("PurifyItemSelector")
         yield("/wait "..interval_rate)
         while not IsNodeVisible("PurifyItemSelector", 1, 7) and IsNodeVisible("PurifyItemSelector", 1, 6) and GetInventoryFreeSlotCount() > num_inventory_free_slot_threshold do -- reduce all
+			if GetCharacterCondition(4) then
+				Print("Attempting to dismount...")
+				Dismount()
+			end
             yield("/pcall PurifyItemSelector true 12 0")
             repeat
                 yield("/wait "..interval_rate)
