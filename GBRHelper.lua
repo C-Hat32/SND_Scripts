@@ -36,7 +36,7 @@
 				
 	1.3.1	:	Improved the unstuck logic
 				Various unstuck bugfixes
-				Impremented another check to prevent an issue with materias/repair while mounted
+				Implemented another check to prevent an issue with materias/repair while mounted
 	
 	<Additional Information>
 	Needed Plugins: 
@@ -218,6 +218,10 @@ end
 
 function WaitNextLoop()
 
+	if GetCharacterCondition(6) then
+		checked_reductibles_this_loop = false
+	end
+	
 	while (GetCharacterCondition(6) or GetCharacterCondition(32) or GetCharacterCondition(45) or GetCharacterCondition(27) or not IsPlayerAvailable() or PathfindInProgress()) do
 		yield("/wait "..interval_rate)
 		ResetStuck()
@@ -343,6 +347,8 @@ function HasReducibles()
 			yield("/wait "..interval_rate)
 		until IsPlayerAvailable()
 	end
+	checked_reductibles_this_loop = true
+	
 	return not visible
 end
 
@@ -442,7 +448,7 @@ function RepairExtractReduceCheck()
     end
 
 
-    if do_reduce and HasReducibles() and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold then
+    if do_reduce and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold and not checked_reductibles_this_loop and HasReducibles()then
         StopMoveFly()
         if GetCharacterCondition(4) then
             Print("Attempting to dismount...")
@@ -595,7 +601,8 @@ function CheckRetainers()
 			if (IsAddonVisible("RetainerList")) then
 				yield("/waitaddon RetainerList")
 			end
-			while not IsAddonVisible("RetainerList") do
+			retainer_window_wait = os.clock()
+			while not IsAddonVisible("RetainerList") or os.clock() - retainer_window_wait < 3 do
 				yield("/wait 1")
 			end
 			yield("/wait 1")
