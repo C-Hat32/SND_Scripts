@@ -125,7 +125,7 @@ do_retainers = true										--true enables Auto Retainer logic when a retainer 
 summoning_bell_name = "Summoning Bell"					--Change this to the summonning bell name when playing in another language	
 
 ---Gathering logic Settings
-num_inventory_free_slot_threshold = 1                   --Max number of free slots to be left before stopping script
+num_inventory_free_slot_threshold = 1                   --Max number of free slots to be left before reducing / stopping script
 interval_rate = 0.2                                     --Seconds to wait for each action
 
 do_random_pause = false									--Make random pauses at set intervals
@@ -312,7 +312,7 @@ function HasActionsToDo()
 
 	return (do_repair and IsNeedRepair())
 		or (do_extract and CanExtractMateria())
-		or (do_reduce and HasReducibles() and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold)
+		or (do_reduce and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold)
 		or (do_retainers and ARRetainersWaitingToBeProcessed())
 		
 end
@@ -352,7 +352,7 @@ function HasReducibles()
 		until IsPlayerAvailable()
 	end
 	checked_reductibles_this_loop = true
-	
+
 	return not visible
 end
 
@@ -452,7 +452,7 @@ function RepairExtractReduceCheck()
     end
 
 
-    if do_reduce and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold and not checked_reductibles_this_loop and HasReducibles()then
+    if do_reduce and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold and not checked_reductibles_this_loop and HasReducibles() then
         StopMoveFly()
         if GetCharacterCondition(4) then
             Print("Attempting to dismount...")
