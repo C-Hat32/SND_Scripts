@@ -119,7 +119,7 @@ repair_threshold = 50									--value at which to repair gear
 do_extract  = true                                      --If true, will extract materia if possible
 do_reduce   = false                                     --If true, will perform aetherial reduction if possible
 do_retainers = true										--true enables Auto Retainer logic when a retainer is ready. Requires Auto Retainer plugin
-summonning_bell_name = "Summoning Bell"					--Change this to the summonning bell name when playing in another language	
+summoning_bell_name = "Summoning Bell"					--Change this to the summonning bell name when playing in another language	
 
 ---Gathering logic Settings
 num_inventory_free_slot_threshold = 1                   --Max number of free slots to be left before stopping script
@@ -147,6 +147,7 @@ last_pause = os.clock()
 next_pause_time = pause_delay + math.random(-pause_delay_rand, pause_delay_rand)
 last_player_position = {x = 0, y = 0, z = 0}
 last_checkstuck_time = os.clock()
+checked_reductibles_this_loop = false
 
 
 -- MAIN
@@ -586,8 +587,8 @@ function CheckRetainers()
 			while PathIsRunning() or PathfindInProgress() do
 				yield("/wait 1")
 			end
-			while GetTargetName() ~= summonning_bell_name do
-				yield("/target "..summonning_bell_name)
+			while GetTargetName() ~= summoning_bell_name do
+				yield("/target "..summoning_bell_name)
 				yield("/wait 0.5")
 			end 
 			yield("/interact")
