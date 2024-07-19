@@ -40,6 +40,8 @@
 				
 	1.3.2	:	Work on fixes for retainers for specific setup of AR
 				Fixed aetherial reduction window opening every second
+				
+	1.3.3	:	Added automove to solv some cases of casting mount too quickly before extract/materia/reduction
 	
 	<Additional Information>
 	Needed Plugins: 
@@ -363,6 +365,8 @@ function RepairExtractReduceCheck()
         if repair_token == "self" then
 						
             StopMoveFly()
+			yield("/automove on")
+			yield("/automove off")
             if GetCharacterCondition(4) then
                 Print("Attempting to dismount...")
                 Dismount()
@@ -412,6 +416,8 @@ function RepairExtractReduceCheck()
 
     if do_extract and CanExtractMateria() and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold then
         StopMoveFly()
+			yield("/automove on")
+			yield("/automove off")
         if GetCharacterCondition(4) then
             Print("Attempting to dismount...")
             Dismount()
@@ -454,6 +460,8 @@ function RepairExtractReduceCheck()
 
     if do_reduce and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold and not checked_reductibles_this_loop and HasReducibles() then
         StopMoveFly()
+		yield("/automove on")
+		yield("/automove off")
         if GetCharacterCondition(4) then
             Print("Attempting to dismount...")
             Dismount()
