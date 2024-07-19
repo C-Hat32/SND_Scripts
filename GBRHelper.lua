@@ -3,7 +3,7 @@
 	Name: GBR Helper
 	Author: C.Hat32
 	Description: Helper for GatherBuddyReborn to handle food, repairs, materia extraction, aetherial reduction and retainers
-	Version: 1.3.1
+	Version: 1.3.2
 	
 	Credits:
 	LeafFriend for the navigation/materia extract/misc wrapper functions, in their GatheringHelper script
@@ -37,6 +37,9 @@
 	1.3.1	:	Improved the unstuck logic
 				Various unstuck bugfixes
 				Implemented another check to prevent an issue with materias/repair while mounted
+				
+	1.3.2	:	Work on fixes for retainers for specific setup of AR
+				Fixed aetherial reduction window opening every second
 	
 	<Additional Information>
 	Needed Plugins: 
