@@ -606,7 +606,7 @@ function CheckRetainers()
 				yield("/waitaddon RetainerList")
 			end
 			retainer_window_wait = os.clock()
-			while not IsAddonVisible("RetainerList") or os.clock() - retainer_window_wait < 3 do
+			while not IsAddonVisible("RetainerList") and os.clock() - retainer_window_wait < 3 do
 				yield("/wait 1")
 			end
 			yield("/wait 1")
