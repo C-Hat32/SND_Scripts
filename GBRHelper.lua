@@ -156,7 +156,6 @@ last_player_position = {x = 0, y = 0, z = 0}
 last_checkstuck_time = os.clock()
 checked_reductibles_this_loop = false
 
-
 -- MAIN
 function main()	
 		
@@ -602,24 +601,9 @@ end
 function CheckRetainers()
 	if do_retainers == true then
 		if ARRetainersWaitingToBeProcessed() == true then
-			while not IsInZone(129) do
-				yield("/tp limsa")
-				yield("/wait 7")
-			end
 			
-			while IsPlayerAvailable() == false do
-				yield("/wait 1")
-			end
+			GoToBell()
 			
-			CheckNavmeshReady()
-			
-			if not PathIsRunning() and not PathfindInProgress() then
-				PathfindAndMoveTo(-122.7251, 18.0000, 20.3941)
-				yield("/wait 1")
-			end
-			while PathIsRunning() or PathfindInProgress() do
-				yield("/wait 1")
-			end
 			while GetTargetName() ~= summoning_bell_name do
 				yield("/target "..summoning_bell_name)
 				yield("/wait 0.5")
@@ -632,9 +616,6 @@ function CheckRetainers()
 				yield("/wait 1")
 			end
 			
-			if (IsAddonVisible("RetainerList")) then
-				yield("/waitaddon RetainerList")
-			end
 			retainer_window_wait = os.clock()
 			while not IsAddonVisible("RetainerList") and os.clock() - retainer_window_wait < 3 do
 				yield("/wait 1")
@@ -646,14 +627,36 @@ function CheckRetainers()
 				yield("/pcall RetainerList true -1")
 			end
 			yield("/wait 1")
-			while GetCharacterCondition(45) do
-				yield("/wait 1")
+			while GetCharacterCondition(50) do --stuck check
+				yield("/pcall RetainerList true -1")
+				yield("/wait 2")
 			end
 			if (do_random_pause) then
 				last_pause = os.clock() -- set last pause as now as we're already doing something other than gathering
 				Print("Reset pause timer. Next pause in "..GetTimeString(next_pause_time))
 			end
 		end
+	end
+end
+
+function GoToBell()
+	while not IsInZone(129) do
+		yield("/tp limsa")
+		yield("/wait 7")
+	end
+	
+	while IsPlayerAvailable() == false do
+		yield("/wait 1")
+	end
+	
+	CheckNavmeshReady()
+	
+	if not PathIsRunning() and not PathfindInProgress() then
+		PathfindAndMoveTo(-122.7251, 18.0000, 20.3941)
+		yield("/wait 1")
+	end
+	while PathIsRunning() or PathfindInProgress() do
+		yield("/wait 1")
 	end
 end
 
