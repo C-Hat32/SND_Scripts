@@ -136,6 +136,14 @@ summoning_bell_name = "Summoning Bell"					--Change this to the summonning bell 
 num_inventory_free_slot_threshold = 1                   --Max number of free slots to be left before reducing / stopping script
 interval_rate = 0.2                                     --Seconds to wait for each action
 
+---Collectibles Settings
+use_custom_collectables_rotation = false					--Use the custom rotation for collectables. Requires GBR collectible actions to be disabled
+collectables_script_name = "AutoCollectables_SingleRun"	--Name of the collectables script to use. 
+														--Link to the script by LeafFriend, Em: https://github.com/Jaksuhn/SomethingNeedDoing/blob/master/Community%20Scripts/Gathering/AutoCollectables_SingleRun.lua
+														--Register this script in SND and make sure to name it the same as the name here.
+														--It will be used to select the collectable actions.
+
+---Misc Settings
 do_random_pause = false									--Make random pauses at set intervals
 pause_duration = 40										--Pause duration in seconds
 pause_duration_rand = 10								--Random range for the pause duration, in seconds
@@ -242,7 +250,10 @@ function WaitNextLoop()
 	end
 	
 	while (GetCharacterCondition(6) or GetCharacterCondition(32) or GetCharacterCondition(45) or GetCharacterCondition(27) or not IsPlayerAvailable() or PathfindInProgress()) do
-		yield("/wait "..interval_rate)
+		yield("/wait "..interval_rate)		
+		if use_custom_collectables_rotation and IsAddonVisible("GatheringMasterpiece") and collectables_script_name ~= "" then
+			yield("/runmacro "..collectables_script_name)
+		end
 		ResetStuck()
 	end
 end
