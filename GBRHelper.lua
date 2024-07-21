@@ -388,6 +388,10 @@ end
 
 function RepairExtractReduceCheck()
 	
+	while not IsPlayerAvailable() do
+			yield("/wait "..interval_rate)
+	end
+		
     local repair_token = IsNeedRepair()
     if repair_token then
         if repair_token == "self" then
