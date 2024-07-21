@@ -126,7 +126,8 @@ do_repair   = "self"                                    --false, "npc" or "self"
 repair_threshold = 50									--value at which to repair gear
 
 do_extract  = true                                      --If true, will extract materia if possible
-do_reduce   = true                                     --If true, will perform aetherial reduction if possible
+do_reduce   = true                                      --If true, will perform aetherial reduction if possible
+reduce_free_slot = 5									--Inventory slots left before reducing
 do_retainers = true										--true enables Auto Retainer logic when a retainer is ready. Requires Auto Retainer plugin
 summoning_bell_name = "Summoning Bell"					--Change this to the summonning bell name when playing in another language	
 
@@ -324,7 +325,7 @@ function HasActionsToDo()
 
 	return (do_repair and IsNeedRepair())
 		or (do_extract and CanExtractMateria())
-		or (do_reduce and GetInventoryFreeSlotCount() + 1 <= num_inventory_free_slot_threshold)
+		or (do_reduce and GetInventoryFreeSlotCount() + 1 <= reduce_free_slot)
 		or (do_retainers and ARRetainersWaitingToBeProcessed())
 		
 end
@@ -479,7 +480,7 @@ function RepairExtractReduceCheck()
     end
 
 
-    if do_reduce and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold and not checked_reductibles_this_loop and HasReducibles() then
+    if do_reduce and GetInventoryFreeSlotCount() + 1 <= reduce_free_slot and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold and not checked_reductibles_this_loop and HasReducibles() then
         StopMoveFly()
 		yield("/automove on")
 		yield("/automove off")
