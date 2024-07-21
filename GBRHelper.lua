@@ -315,8 +315,8 @@ function HasAllDependencies()
 	
 	if(do_reduce == true) then
 		Print("Warning: You're using the untested Aetherial Reduction feature. Issues may occur.")
-		if reduce_gp_threshold <= 0 then
-			Print("Reduction GP threshold value incorrect. Please use a value above 0."
+		if (reduce_gp_threshold <= 0) then
+			Print("Reduction GP threshold value incorrect. Please use a value above 0.")
 			reduce_gp_threshold = 10000
 		end
 	end
