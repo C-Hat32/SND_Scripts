@@ -145,7 +145,7 @@ timeout_threshold = 10                                  --Maximum number of seco
 
 ---Stuck Prevention Settings
 do_try_unstuck = true
-stuck_time = 2											--Time not moving before considering player is stuck
+stuck_time = 2.5										--Time not moving before considering player is stuck
 time_to_wait_after_dislodge = 8							--Wait time between the unstuck movement and the next actions
 stuck_distance_allowed = 0.05							--Error margin for considering character is not moving
 position_rounding_precision = 2							--Numbers of decimals to keep when checking the player position
@@ -159,6 +159,7 @@ next_pause_time = pause_delay + math.random(-pause_delay_rand, pause_delay_rand)
 last_player_position = {x = 0, y = 0, z = 0}
 last_checkstuck_time = os.clock()
 checked_reductibles_this_loop = false
+last_reducibles_status = false
 
 -- MAIN
 function main()	
@@ -330,7 +331,7 @@ function HasActionsToDo()
 
 	return (do_repair and IsNeedRepair())
 		or (do_extract and CanExtractMateria())
-		or (do_reduce and (GetInventoryFreeSlotCount() + 1 <= reduce_free_slot or GetGp() < reduce_gp_threshold))
+		or (do_reduce and (GetInventoryFreeSlotCount() + 1 <= reduce_free_slot or GetGp() < reduce_gp_threshold) and HasReducibles())
 		or (do_retainers and ARRetainersWaitingToBeProcessed())
 		
 end
@@ -354,6 +355,11 @@ function IsNeedRepair()
 end
 
 function HasReducibles()
+
+	if checked_reductibles_this_loop then
+		return last_reducibles_status
+	end
+	
 	while not IsAddonVisible("PurifyItemSelector") and not IsAddonReady("PurifyItemSelector") do
 		yield('/gaction "Aetherial Reduction"')
 		local timeout_start = os.clock()
@@ -370,6 +376,7 @@ function HasReducibles()
 		until IsPlayerAvailable()
 	end
 	checked_reductibles_this_loop = true
+	last_reducibles_status = not visible
 
 	return not visible
 end
@@ -485,7 +492,7 @@ function RepairExtractReduceCheck()
     end
 
 
-    if do_reduce and (GetInventoryFreeSlotCount() + 1 <= reduce_free_slot or GetGp() < reduce_gp_threshold) and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold and not checked_reductibles_this_loop and HasReducibles() then
+    if do_reduce and (GetInventoryFreeSlotCount() + 1 <= reduce_free_slot or GetGp() < reduce_gp_threshold) and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold and HasReducibles() then
         StopMoveFly()
 		yield("/automove on")
 		yield("/automove off")
