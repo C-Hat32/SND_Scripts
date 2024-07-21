@@ -395,10 +395,14 @@ function RepairExtractReduceCheck()
             StopMoveFly()
 			yield("/automove on")
 			yield("/automove off")
+			yield("/wait "..interval_rate)
             if GetCharacterCondition(4) then
                 Print("Attempting to dismount...")
                 Dismount()
             end
+			while not IsPlayerAvailable() do
+				yield("/wait "..interval_rate)
+			end
             Print("Attempting to self repair...")
             while CanCharacterDoActions() and not IsAddonVisible("Repair") and not IsAddonReady("Repair") do
 				
@@ -447,12 +451,16 @@ function RepairExtractReduceCheck()
 
     if do_extract and CanExtractMateria() and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold then
         StopMoveFly()
-			yield("/automove on")
-			yield("/automove off")
+		yield("/automove on")
+		yield("/automove off")
+		yield("/wait "..interval_rate)
         if GetCharacterCondition(4) then
             Print("Attempting to dismount...")
             Dismount()
         end
+		while not IsPlayerAvailable() do
+			yield("/wait "..interval_rate)
+		end
         Print("Attempting to extract materia...")
         while CanCharacterDoActions() and not IsAddonVisible("Materialize") and not IsAddonReady("Materialize") do
 			
@@ -496,10 +504,14 @@ function RepairExtractReduceCheck()
         StopMoveFly()
 		yield("/automove on")
 		yield("/automove off")
+		yield("/wait "..interval_rate)
         if GetCharacterCondition(4) then
             Print("Attempting to dismount...")
             Dismount()
         end
+		while not IsPlayerAvailable() do
+			yield("/wait "..interval_rate)
+		end
         Print("Attempting to perform aetherial reduction...")
         repeat --Show reduction window
 			if not CanCharacterDoActions() then return end
