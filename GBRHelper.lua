@@ -124,7 +124,7 @@ do_repair   = "self"                                    --false, "npc" or "self"
 repair_threshold = 50									--value at which to repair gear
 
 do_extract  = true                                      --If true, will extract materia if possible
-do_reduce   = false                                     --If true, will perform aetherial reduction if possible
+do_reduce   = true                                     --If true, will perform aetherial reduction if possible
 do_retainers = true										--true enables Auto Retainer logic when a retainer is ready. Requires Auto Retainer plugin
 summoning_bell_name = "Summoning Bell"					--Change this to the summonning bell name when playing in another language	
 
@@ -206,7 +206,7 @@ function main()
 			ResetStuck()
 		end		
 		
-		if (not GetCharacterCondition(6) and not HasActionsToDo())
+		if (not GetCharacterCondition(6) and HasActionsToDo())
 			or GetInventoryFreeSlotCount() <= num_inventory_free_slot_threshold then
 				if GetInventoryFreeSlotCount() <= num_inventory_free_slot_threshold then
 					Print("Inventory free slot threshold reached. Disabling gbr and script")
@@ -321,7 +321,7 @@ function HasActionsToDo()
 
 	return (do_repair and IsNeedRepair())
 		or (do_extract and CanExtractMateria())
-		or (do_reduce and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold)
+		or (do_reduce and GetInventoryFreeSlotCount() + 1 <= num_inventory_free_slot_threshold)
 		or (do_retainers and ARRetainersWaitingToBeProcessed())
 		
 end
