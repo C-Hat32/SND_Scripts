@@ -43,6 +43,8 @@
 				
 	1.3.3	:	Added automove to solv some cases of casting mount too quickly before extract/materia/reduction
 	
+	1.3.4	:	Additional checks to prevent getting stuck with extract/materia/reduction when on a mount
+	
 	<Additional Information>
 	Needed Plugins: 
 		SomethingNeedDoing (Expanded Edition): https://puni.sh/api/repository/croizat
@@ -179,10 +181,12 @@ function main()
 				
 		if(HasActionsToDo()) then
 			
-			yield("/gbr auto off")
 			Print("Actions required, pausing gbr")
+			yield("/gbr auto off")
+			yield("/wait "..interval_rate)
+			StopMoveFly()
 			
-			while (GetCharacterCondition(27) or GetCharacterCondition(45)) and not IsPlayerAvailable() do -- while busy
+			while GetCharacterCondition(27) or GetCharacterCondition(45) or not IsPlayerAvailable() do -- while busy
 				yield("/wait "..interval_rate)
 			end
 			yield("/wait 1.5")
@@ -194,12 +198,16 @@ function main()
 			CheckRetainers()
 			if (CheckQueue()) then return end
 			
+			while GetCharacterCondition(27) or GetCharacterCondition(45) or not IsPlayerAvailable() do -- while busy
+				yield("/wait "..interval_rate)
+			end
+			
 			yield("/gbr auto on")
 			Print("Actions finished, enabling gbr")	
 			ResetStuck()
 		end		
 		
-		if (not GetCharacterCondition(6) and not RepairExtractReduceCheck())
+		if (not GetCharacterCondition(6) and not HasActionsToDo())
 			or GetInventoryFreeSlotCount() <= num_inventory_free_slot_threshold then
 				if GetInventoryFreeSlotCount() <= num_inventory_free_slot_threshold then
 					Print("Inventory free slot threshold reached. Disabling gbr and script")
@@ -358,8 +366,13 @@ function HasReducibles()
 	return not visible
 end
 
-function RepairExtractReduceCheck() 
-		
+function CanCharacterDoActions()
+
+	return not (GetCharacterCondition(6) or GetCharacterCondition(32) or GetCharacterCondition(45) or GetCharacterCondition(27) or GetCharacterCondition(4))
+end
+
+function RepairExtractReduceCheck()
+	
     local repair_token = IsNeedRepair()
     if repair_token then
         if repair_token == "self" then
@@ -372,14 +385,17 @@ function RepairExtractReduceCheck()
                 Dismount()
             end
             Print("Attempting to self repair...")
-            while not IsAddonVisible("Repair") and not IsAddonReady("Repair") do
+            while CanCharacterDoActions() and not IsAddonVisible("Repair") and not IsAddonReady("Repair") do
+				
 				if GetCharacterCondition(4) then
 					Print("Attempting to dismount...")
 					Dismount()
 				end
 				
                 yield('/gaction "Repair"')
-                repeat
+                repeat				
+					if not CanCharacterDoActions() then return end
+					
                     yield("/wait "..interval_rate)
                 until IsPlayerAvailable()
             end
@@ -423,14 +439,16 @@ function RepairExtractReduceCheck()
             Dismount()
         end
         Print("Attempting to extract materia...")
-        while not IsAddonVisible("Materialize") and not IsAddonReady("Materialize") do
-                yield('/gaction "Materia Extraction"')
-                repeat
-                    yield("/wait "..interval_rate)
-                until IsPlayerAvailable()
+        while CanCharacterDoActions() and not IsAddonVisible("Materialize") and not IsAddonReady("Materialize") do
+			
+			yield('/gaction "Materia Extraction"')
+			repeat
+				yield("/wait "..interval_rate)
+			until IsPlayerAvailable()
         end
-        while CanExtractMateria() and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold do
-            if GetCharacterCondition(4) then
+        while CanCharacterDoActions() and CanExtractMateria() and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold do
+				
+			if GetCharacterCondition(4) then
                 Print("Attempting to dismount...")
                 Dismount()
             end
@@ -438,10 +456,11 @@ function RepairExtractReduceCheck()
 			yield("/wait 0.1")
             yield("/pcall Materialize true 2 0")
             repeat
+				if not CanCharacterDoActions() then return end
                 yield("/wait 1")
             until not GetCharacterCondition(39)
         end
-        while IsAddonVisible("Materialize") do
+        while CanCharacterDoActions() and IsAddonVisible("Materialize") do
             yield('/gaction "Materia Extraction"')
             repeat
                 yield("/wait "..interval_rate)
@@ -468,6 +487,8 @@ function RepairExtractReduceCheck()
         end
         Print("Attempting to perform aetherial reduction...")
         repeat --Show reduction window
+			if not CanCharacterDoActions() then return end
+			
             yield('/gaction "Aetherial Reduction"')
             local timeout_start = os.clock()
             repeat
@@ -475,13 +496,14 @@ function RepairExtractReduceCheck()
             until IsNodeVisible("PurifyItemSelector", 1, 6) or IsNodeVisible("PurifyItemSelector", 1, 7) or os.clock() - timeout_start > timeout_threshold
         until IsAddonVisible("PurifyItemSelector") and IsAddonReady("PurifyItemSelector")
         yield("/wait "..interval_rate)
-        while not IsNodeVisible("PurifyItemSelector", 1, 7) and IsNodeVisible("PurifyItemSelector", 1, 6) and GetInventoryFreeSlotCount() > num_inventory_free_slot_threshold do -- reduce all
+        while CanCharacterDoActions() and not IsNodeVisible("PurifyItemSelector", 1, 7) and IsNodeVisible("PurifyItemSelector", 1, 6) and GetInventoryFreeSlotCount() > num_inventory_free_slot_threshold do -- reduce all
 			if GetCharacterCondition(4) then
 				Print("Attempting to dismount...")
 				Dismount()
 			end
             yield("/pcall PurifyItemSelector true 12 0")
             repeat
+				if not CanCharacterDoActions() then return end
                 yield("/wait "..interval_rate)
             until not GetCharacterCondition(39)
 			
