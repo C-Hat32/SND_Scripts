@@ -127,7 +127,7 @@ repair_threshold = 50									--value at which to repair gear
 
 do_extract  = true                                      --If true, will extract materia if possible
 do_reduce   = true                                      --If true, will perform aetherial reduction if possible.
-reduce_gp_threshold = 100								--Will prefer reducing if gp is lower than that value to optimize low-gp time
+reduce_gp_threshold = 500								--Will prefer reducing if gp is lower than that value to optimize low-gp time
 reduce_free_slot = 5									--Inventory slots left before forcing aetherial reduction
 do_retainers = true										--true enables Auto Retainer logic when a retainer is ready. Requires Auto Retainer plugin
 summoning_bell_name = "Summoning Bell"					--Change this to the summonning bell name when playing in another language	
@@ -556,6 +556,7 @@ function RepairExtractReduceCheck()
                 yield("/wait "..interval_rate)
             until IsPlayerAvailable()		
         end
+		last_reducibles_status = false
         Print("Aetherial reduction complete!")
     end
 
