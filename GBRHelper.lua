@@ -68,7 +68,7 @@
 	
 	Additional advice for GBR:
 	- Set GBR > Config > Auto-Gather > General > Mount Up Distance to 30 
-	- Set GBR > Config > Auto-Gather > Advanced > Far Node Filter Distance to 100+ 
+	- Set GBR > Config > Auto-Gather > Advanced > Far Node Filter Distance to ~100 
 	- There's currently issues with GBR when the auto-gather list has different materials in the same area. If you encounter pathing issues, try to use an auto gather list with only one resource node
 	
 	
@@ -126,8 +126,9 @@ do_repair   = "self"                                    --false, "npc" or "self"
 repair_threshold = 50									--value at which to repair gear
 
 do_extract  = true                                      --If true, will extract materia if possible
-do_reduce   = true                                      --If true, will perform aetherial reduction if possible
-reduce_free_slot = 5									--Inventory slots left before reducing
+do_reduce   = true                                      --If true, will perform aetherial reduction if possible.
+reduce_gp_threshold = 100								--Will prefer reducing if gp is lower than that value to optimize low-gp time
+reduce_free_slot = 5									--Inventory slots left before forcing aetherial reduction
 do_retainers = true										--true enables Auto Retainer logic when a retainer is ready. Requires Auto Retainer plugin
 summoning_bell_name = "Summoning Bell"					--Change this to the summonning bell name when playing in another language	
 
@@ -314,6 +315,10 @@ function HasAllDependencies()
 	
 	if(do_reduce == true) then
 		Print("Warning: You're using the untested Aetherial Reduction feature. Issues may occur.")
+		if reduce_gp_threshold <= 0 then
+			Print("Reduction GP threshold value incorrect. Please use a value above 0."
+			reduce_gp_threshold = 10000
+		end
 	end
 	
 	return allDependencies
@@ -325,7 +330,7 @@ function HasActionsToDo()
 
 	return (do_repair and IsNeedRepair())
 		or (do_extract and CanExtractMateria())
-		or (do_reduce and GetInventoryFreeSlotCount() + 1 <= reduce_free_slot)
+		or (do_reduce and (GetInventoryFreeSlotCount() + 1 <= reduce_free_slot or GetGp() < reduce_gp_threshold))
 		or (do_retainers and ARRetainersWaitingToBeProcessed())
 		
 end
@@ -480,7 +485,7 @@ function RepairExtractReduceCheck()
     end
 
 
-    if do_reduce and GetInventoryFreeSlotCount() + 1 <= reduce_free_slot and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold and not checked_reductibles_this_loop and HasReducibles() then
+    if do_reduce and (GetInventoryFreeSlotCount() + 1 <= reduce_free_slot or GetGp() < reduce_gp_threshold) and GetInventoryFreeSlotCount() + 1 > num_inventory_free_slot_threshold and not checked_reductibles_this_loop and HasReducibles() then
         StopMoveFly()
 		yield("/automove on")
 		yield("/automove off")
