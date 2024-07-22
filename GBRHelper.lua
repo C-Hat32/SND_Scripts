@@ -5,7 +5,7 @@
 	Name: GBR Helper
 	Author: C.Hat32
 	Description: Helper for GatherBuddyReborn to handle food, repairs, materia extraction, aetherial reduction and retainers
-	Version: 1.3.5_EXP
+	Version: 1.4.1_EXP
 	
 	Credits:
 	LeafFriend for the navigation/materia extract/misc wrapper functions, in their GatheringHelper script
