@@ -256,6 +256,8 @@ function WaitNextLoop()
 		checked_reductibles_this_loop = false
 	end
 	
+	local was_wait_casting = false
+	
 	while (GetCharacterCondition(6) or GetCharacterCondition(32) or GetCharacterCondition(45) or GetCharacterCondition(27) or not IsPlayerAvailable() or PathfindInProgress()) do
 		yield("/wait "..interval_rate)		
 		if use_custom_collectables_rotation and IsAddonVisible("GatheringMasterpiece") and collectables_script_name ~= "" then
@@ -265,11 +267,20 @@ function WaitNextLoop()
 		if GetCharacterCondition(45) then
 			area_change_end = os.clock()
 		end
+		if GetCharacterCondition(27) then
+			was_wait_casting = true
+		end
 	end
 	
 	while os.clock() - area_change_end < wait_area_change do
 		yield("/wait "..interval_rate)	
 	end	
+	
+	if (was_wait_casting) then
+		yield("/wait 1")
+		WaitNextLoop()
+	end
+	
 	ResetStuck()
 end
 
