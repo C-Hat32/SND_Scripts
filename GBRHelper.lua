@@ -47,6 +47,10 @@
 	
 	1.3.4	:	Additional checks to prevent getting stuck with extract/materia/reduction when on a mount
 	
+	1.4.1	:	Improved the various checks to not get stuck
+				Preliminary work on the retainers system to handle AR multi (not working yet)
+				Added custom collectibles rotation via external script. Requires ALL gbr collectible actions to be disabled.
+	
 	<Additional Information>
 	Needed Plugins: 
 		SomethingNeedDoing (Expanded Edition): https://puni.sh/api/repository/croizat
