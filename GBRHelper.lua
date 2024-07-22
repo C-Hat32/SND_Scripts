@@ -1,11 +1,9 @@
 --[[
-
-	WARNING: YOU'RE USING THE EXPERIMENTAL VERSION OF THE SCRIPT
 	
 	Name: GBR Helper
 	Author: C.Hat32
 	Description: Helper for GatherBuddyReborn to handle food, repairs, materia extraction, aetherial reduction and retainers
-	Version: 1.4.1_EXP
+	Version: 1.4.1
 	
 	Credits:
 	LeafFriend for the navigation/materia extract/misc wrapper functions, in their GatheringHelper script
@@ -182,7 +180,6 @@ area_change_end = 0
 -- MAIN
 function main()	
 		
-	Print("WARNING: YOU'RE USING THE EXPERIMENTAL VERSION OF THE SCRIPT!")
 	if not HasAllDependencies() then
 		return
 	end	
