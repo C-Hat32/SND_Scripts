@@ -150,6 +150,7 @@ pause_duration_rand = 10								--Random range for the pause duration, in second
 pause_delay = 900										--Time between two pauses, in seconds
 pause_delay_rand = 120									--Random range for the time between two pauses, in seconds
 timeout_threshold = 10                                  --Maximum number of seconds script will attempt to wait before timing out and continuing the script
+wait_area_change = 3									--Additional wait time when changing areas
 
 ---Stuck Prevention Settings
 do_try_unstuck = true
@@ -168,6 +169,7 @@ last_player_position = {x = 0, y = 0, z = 0}
 last_checkstuck_time = os.clock()
 checked_reductibles_this_loop = false
 last_reducibles_status = false
+area_change_end = 0
 
 -- MAIN
 function main()	
@@ -254,8 +256,17 @@ function WaitNextLoop()
 		if use_custom_collectables_rotation and IsAddonVisible("GatheringMasterpiece") and collectables_script_name ~= "" then
 			yield("/runmacro "..collectables_script_name)
 		end
+		
+		if GetCharacterCondition(45) then
+			area_change_end = os.clock()
+		end
 		ResetStuck()
 	end
+	
+	while os.clock() - area_change_end < wait_area_change do
+		yield("/wait "..interval_rate)	
+	end	
+	ResetStuck()
 end
 
 --Wrapper for the random pause
