@@ -153,7 +153,7 @@ pause_duration_rand = 10								--Random range for the pause duration, in second
 pause_delay = 900										--Time between two pauses, in seconds
 pause_delay_rand = 120									--Random range for the time between two pauses, in seconds
 timeout_threshold = 10                                  --Maximum number of seconds script will attempt to wait before timing out and continuing the script
-wait_area_change = 3									--Additional wait time when changing areas
+wait_area_change = 1									--Additional wait time when changing areas
 
 ---Stuck Prevention Settings
 do_try_unstuck = true
@@ -264,7 +264,6 @@ function WaitNextLoop()
 		if GetCharacterCondition(45) then
 			area_change_end = os.clock()
 		end
-		ResetStuck()
 	end
 	
 	while os.clock() - area_change_end < wait_area_change do
@@ -718,7 +717,13 @@ end
 
 --Wrapper to handle stopping vnavmesh movement
 function StopMoveFly()
+	
+	while PathfindInProgress() do
+		yield("/wait "..interval_rate)
+	end
+	
     PathStop()
+	
     while PathIsRunning() do
         yield("/wait "..interval_rate)
     end
