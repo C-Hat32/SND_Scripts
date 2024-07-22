@@ -203,6 +203,7 @@ function main()
 			Print("Actions required, pausing gbr")
 			yield("/gbr auto off")
 			yield("/wait "..interval_rate)
+			WaitNextLoop()
 			StopMoveFly()
 			
 			while GetCharacterCondition(27) or GetCharacterCondition(45) or not IsPlayerAvailable() do -- while busy
@@ -413,7 +414,9 @@ function CanCharacterDoActions()
 end
 
 function RepairExtractReduceCheck()
-		
+	
+	WaitNextLoop()
+	
     local repair_token = IsNeedRepair()
     if repair_token then
         if repair_token == "self" then
@@ -655,6 +658,8 @@ end
 --Wrapper to handle Retainers
 function CheckRetainers()
 	if do_retainers == true then
+	
+		WaitNextLoop()
 		if ARRetainersWaitingToBeProcessed() == true then
 			
 			GoToBell()
