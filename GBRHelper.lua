@@ -126,9 +126,11 @@ do_repair   = "self"                                    --false, "npc" or "self"
 repair_threshold = 50									--value at which to repair gear
 
 do_extract  = true                                      --If true, will extract materia if possible
+
 do_reduce   = true                                      --If true, will perform aetherial reduction if possible.
-reduce_gp_threshold = 500								--Will prefer reducing if gp is lower than that value to optimize low-gp time
+reduce_gp_threshold = 250								--Will prefer reducing if gp is lower than that value to optimize low-gp time
 reduce_free_slot = 5									--Inventory slots left before forcing aetherial reduction
+
 do_retainers = true										--true enables Auto Retainer logic when a retainer is ready. Requires Auto Retainer plugin
 summoning_bell_name = "Summoning Bell"					--Change this to the summonning bell name when playing in another language	
 
@@ -142,6 +144,7 @@ collectables_script_name = "AutoCollectables_SingleRun"	--Name of the collectabl
 														--Link to the script by LeafFriend, Em: https://github.com/Jaksuhn/SomethingNeedDoing/blob/master/Community%20Scripts/Gathering/AutoCollectables_SingleRun.lua
 														--Register this script in SND and make sure to name it the same as the name here.
 														--It will be used to select the collectable actions.
+														--Know that it's possible to customize the collectable rotation in that script but I won't provide support for that.
 
 ---Misc Settings
 do_random_pause = false									--Make random pauses at set intervals
@@ -160,9 +163,10 @@ stuck_distance_allowed = 0.05							--Error margin for considering character is 
 position_rounding_precision = 2							--Numbers of decimals to keep when checking the player position
 
 
+
+
 -- INIT
 stop_main = false
-
 last_pause = os.clock()
 next_pause_time = pause_delay + math.random(-pause_delay_rand, pause_delay_rand)
 last_player_position = {x = 0, y = 0, z = 0}
@@ -325,7 +329,8 @@ function HasAllDependencies()
 		if not HasPlugin("YesAlready") then
 			Print("Please Install YesAlready")
 			allDependencies = false
-		elseif do_extract == true then
+		end
+		if do_extract == true then
 			Print("Materia extraction detected. Please make sure YesAlready setting -> Bothers -> MaterializeDialog option is enabled.")
 		end
 	end
