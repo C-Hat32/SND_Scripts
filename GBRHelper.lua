@@ -200,6 +200,7 @@ function main()
 				
 		if(HasActionsToDo()) then
 			
+			WaitNextLoop()
 			Print("Actions required, pausing gbr")
 			yield("/gbr auto off")
 			yield("/wait "..interval_rate)
