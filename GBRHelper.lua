@@ -159,7 +159,7 @@ timeout_threshold = 10                                  --Maximum number of seco
 wait_area_change = 1									--Additional wait time when changing areas
 
 ---Stuck Prevention Settings
-do_try_unstuck = true
+do_try_unstuck = false									--Deprecated. Conflicts with GBR unstuck features.
 stuck_time = 2.5										--Time not moving before considering player is stuck
 time_to_wait_after_dislodge = 8							--Wait time between the unstuck movement and the next actions
 stuck_distance_allowed = 0.05							--Error margin for considering character is not moving
