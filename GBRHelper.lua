@@ -55,6 +55,7 @@
 			-> Enable lua on this script
 		GatherBuddyReborn
 		vnavmesh
+		Pandora's box
 			
 	Optional plugins: 
 		For retainers feature:
@@ -324,6 +325,11 @@ function HasAllDependencies()
 	end
 	if not HasPlugin("GatherbuddyReborn") then
 		Print("Please Install Gather Buddy Reborn")
+		allDependencies = false
+	end
+	
+	if not HasPlugin("PandorasBox") then
+		Print("Please Install Pandora's Box")
 		allDependencies = false
 	end
 	
