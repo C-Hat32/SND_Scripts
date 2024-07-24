@@ -240,8 +240,10 @@ function main()
 			yield("/gbr auto off") -- disabling gbr
 			return
 		end
-		
-		CheckStuck()
+
+		if (do_try_unstuck) then
+			CheckStuck()
+		end
 		
 		if (do_random_pause) then
 			CheckRandomPause()
